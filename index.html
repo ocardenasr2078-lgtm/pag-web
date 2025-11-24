@@ -1,339 +1,43 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SoundWave - Catálogo de Instrumentos Musicales</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            color: #2d3748;
-        }
-
-        /* Header */
-        header {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            padding: 1.5rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .search-bar { flex: 1; max-width: 500px; margin: 0 2rem; position: relative; }
-        .search-bar input {
-            width: 100%;
-            padding: 0.8rem 3rem 0.8rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 1rem;
-        }
-        .search-bar input:focus { outline: none; border-color: #4facfe; }
-        .search-icon { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.2rem; color: #a0aec0; }
-        .cart-icon { font-size: 1.5rem; cursor: pointer; padding: 0.5rem; position: relative; }
-
-        /* Filters */
-        .filters {
-            background: white;
-            padding: 1.5rem 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .filters-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .filter-btn {
-            padding: 0.6rem 1.5rem;
-            border: 2px solid #e2e8f0;
-            background: white;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #4a5568;
-        }
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-            border-color: transparent;
-        }
-
-        /* Main Content */
-        .main-content {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 2rem;
-        }
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .content-header h1 { font-size: 2rem; color: #2d3748; }
-        .sort-select {
-            padding: 0.7rem 1.5rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            font-size: 0.95rem;
-            cursor: pointer;
-        }
-
-        /* Product Grid */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        .product-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-        .product-card:hover { transform: translateY(-8px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
-        .product-image {
-            height: 220px;
-            background: linear-gradient(135deg, #e0f7ff 0%, #fff 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            position: relative;
-        }
-        .badge { position: absolute; top: 1rem; right: 1rem; background: #48bb78; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
-        .badge.new { background: #4299e1; }
-        .badge.sale { background: #f56565; }
-        .product-info { padding: 1.5rem; }
-        .product-category { color: #718096; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
-        .product-name { font-size: 1.1rem; font-weight: 600; color: #2d3748; margin-bottom: 0.5rem; }
-        .product-description { color: #718096; font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5; }
-        .product-footer { display: flex; justify-content: space-between; align-items: center; }
-        .price { font-size: 1.5rem; font-weight: bold; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .add-to-cart { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
-        .add-to-cart:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4); }
-        .rating { display: flex; align-items: center; gap: 0.3rem; margin-bottom: 1rem; color: #ecc94b; font-size: 0.9rem; }
-
-        /* Footer */
-        footer { background: white; padding: 3rem 2rem; margin-top: 4rem; box-shadow: 0 -2px 8px rgba(0,0,0,0.05); }
-        .footer-content { max-width: 1400px; margin: 0 auto; text-align: center; }
-        .footer-content h3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-size: 1.5rem; margin-bottom: 1rem; }
-        .footer-links { display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; flex-wrap: wrap; }
-        .footer-links a { color: #4a5568; text-decoration: none; transition: color 0.3s; }
-        .footer-links a:hover { color: #4facfe; }
-
-        /* Chatbot */
-        .chatbot {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 300px;
-            max-height: 400px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            font-family: sans-serif;
-        }
-        .chatbot-header {
-            background: #4facfe;
-            color: white;
-            padding: 0.8rem 1rem;
-            font-weight: bold;
-        }
-        .chatbot-messages {
-            flex: 1;
-            padding: 0.5rem 1rem;
-            overflow-y: auto;
-        }
-        .chatbot-input {
-            display: flex;
-            border-top: 1px solid #e2e8f0;
-        }
-        .chatbot-input input {
-            flex: 1;
-            border: none;
-            padding: 0.7rem 1rem;
-            font-size: 0.95rem;
-        }
-        .chatbot-input button {
-            border: none;
-            background: #4facfe;
-            color: white;
-            padding: 0 1rem;
-            cursor: pointer;
-        }
-        .message { margin-bottom: 0.5rem; }
-        .message.user { text-align: right; color: #2d3748; }
-        .message.bot { text-align: left; color: #4a5568; }
-    </style>
-</head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="header-content">
-            <div class="logo">🎵 SoundWave</div>
-            <div class="search-bar">
-                <input type="text" placeholder="Buscar instrumentos, marcas, categorías...">
-                <span class="search-icon">🔍</span>
-            </div>
-            <div class="cart-icon">🛒</div>
-        </div>
-    </header>
-
-    <!-- Filters -->
-    <section class="filters">
-        <div class="filters-content">
-            <button class="filter-btn active" onclick="filterProducts(event, 'todos')">Todos</button>
-            <button class="filter-btn" onclick="filterProducts(event, 'cuerdas')">Cuerdas</button>
-            <button class="filter-btn" onclick="filterProducts(event, 'viento')">Viento</button>
-            <button class="filter-btn" onclick="filterProducts(event, 'percusion')">Percusión</button>
-            <button class="filter-btn" onclick="filterProducts(event, 'teclados')">Teclados</button>
-            <button class="filter-btn" onclick="filterProducts(event, 'audio')">Audio</button>
-            <button class="filter-btn" onclick="filterProducts(event, 'accesorios')">Accesorios</button>
-        </div>
-    </section>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="content-header">
-            <h1>Catálogo de Productos</h1>
-            <select class="sort-select">
-                <option>Ordenar por: Destacados</option>
-                <option>Precio: Menor a Mayor</option>
-                <option>Precio: Mayor a Menor</option>
-                <option>Más Vendidos</option>
-                <option>Mejor Calificados</option>
-            </select>
-        </div>
-
-        <div class="products-grid" id="productsGrid">
-            <!-- Aquí van los productos (ya los tienes, se pueden copiar tal como están en tu código) -->
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <h3>🎵 SoundWave</h3>
-            <p>Tu destino para instrumentos musicales de calidad</p>
-            <div class="footer-links">
-                <a href="#">Inicio</a>
-                <a href="#">Catálogo</a>
-                <a href="#">Ofertas</a>
-                <a href="#">Marcas</a>
-                <a href="#">Servicio Técnico</a>
-                <a href="#">Contacto</a>
-                <a href="#">Ayuda</a>
-            </div>
-            <p style="margin-top: 1.5rem; color: #718096;">📍 Toluca, México | 📞 (722) 555-7890 | 📧 hola@soundwave.mx</p>
-            <p style="margin-top: 1rem; color: #a0aec0;">&copy; 2025 SoundWave. Todos los derechos reservados.</p>
-        </div>
-    </footer>
-
-    <!-- Chatbot -->
-    <div class="chatbot">
-        <div class="chatbot-header">Chat de Ayuda</div>
-        <div class="chatbot-messages" id="chatMessages"></div>
-        <div class="chatbot-input">
-            <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
-            <button onclick="sendMessage()">Enviar</button>
-        </div>
+<!-- Chatbot simple -->
+<div class="chatbot">
+    <div class="chatbot-header">Chat de Ayuda</div>
+    <div class="chatbot-messages" id="chatMessages"></div>
+    <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Escribe tu mensaje...">
+        <button onclick="sendMessage()">Enviar</button>
     </div>
+</div>
 
-    <script>
-        // Filtros
-        function filterProducts(event, category) {
-            const cards = document.querySelectorAll('.product-card');
-            const buttons = document.querySelectorAll('.filter-btn');
-            
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            cards.forEach(card => {
-                if (category === 'todos' || card.dataset.category === category) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
+<script>
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
 
-        // Agregar al carrito
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const productName = e.target.closest('.product-card').querySelector('.product-name').textContent;
-                    alert(`✓ ${productName} agregado al carrito`);
-                });
-            });
-        });
+function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
 
-        // Chatbot básico
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
+    const userMsg = document.createElement('div');
+    userMsg.classList.add('message', 'user');
+    userMsg.textContent = text;
+    chatMessages.appendChild(userMsg);
 
-        function sendMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
+    chatInput.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Mensaje del usuario
-            const userMsg = document.createElement('div');
-            userMsg.classList.add('message', 'user');
-            userMsg.textContent = text;
-            chatMessages.appendChild(userMsg);
+    setTimeout(() => {
+        const botMsg = document.createElement('div');
+        botMsg.classList.add('message', 'bot');
+        botMsg.textContent = getBotResponse(text);
+        chatMessages.appendChild(botMsg);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 500);
+}
 
-            chatInput.value = '';
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            // Respuesta automática simple
-            setTimeout(() => {
-                const botMsg = document.createElement('div');
-                botMsg.classList.add('message', 'bot');
-                botMsg.textContent = getBotResponse(text);
-                chatMessages.appendChild(botMsg);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 500);
-        }
-
-        function getBotResponse(text) {
-            const msg = text.toLowerCase();
-            if (msg.includes('hola') || msg.includes('buenas')) return '¡Hola! ¿En qué puedo ayudarte hoy?';
-            if (msg.includes('precio') || msg.includes('costo')) return 'Puedes ver los precios de cada producto en su tarjeta correspondiente.';
-            if (msg.includes('guitarra')) return 'Tenemos varias guitarras, eléctricas y acústicas. Filtra por "Cuerdas" para verlas todas.';
-            if (msg.includes('contacto')) return 'Puedes llamarnos al (722) 555-7890 o enviar un correo a hola@soundwave.mx';
-            return 'Lo siento, no entendí tu mensaje. ¿Podrías reformularlo?';
-        }
-    </script>
-</body>
-</html>
+function getBotResponse(text) {
+    const msg = text.toLowerCase();
+    if (msg.includes('hola') || msg.includes('buenas')) return '¡Hola! ¿En qué puedo ayudarte hoy?';
+    if (msg.includes('precio')) return 'Puedes ver los precios de cada producto en su tarjeta.';
+    if (msg.includes('contacto')) return 'Llámanos al (722) 555-7890 o envía un correo a hola@soundwave.mx';
+    return 'Lo siento, no entendí tu mensaje.';
+}
+</script>
