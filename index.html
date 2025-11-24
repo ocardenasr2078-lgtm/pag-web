@@ -1,0 +1,756 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoundWave - Catálogo de Instrumentos Musicales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 500px;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.8rem 3rem 0.8rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #a0aec0;
+        }
+
+        .cart-icon {
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            position: relative;
+        }
+
+        /* Filters */
+        .filters {
+            background: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .filters-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .content-header h1 {
+            font-size: 2rem;
+            color: #2d3748;
+        }
+
+        .sort-select {
+            padding: 0.7rem 1.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            height: 220px;
+            background: linear-gradient(135deg, #e0f7ff 0%, #fff 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #48bb78;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .badge.new {
+            background: #4299e1;
+        }
+
+        .badge.sale {
+            background: #f56565;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            color: #718096;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-description {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .add-to-cart {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin-bottom: 1rem;
+            color: #ecc94b;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-content h3 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #4a5568;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #4facfe;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-bar {
+                margin: 1rem 0;
+                max-width: 100%;
+            }
+
+            .header-content {
+                flex-wrap: wrap;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .content-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">🎵 SoundWave</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar instrumentos, marcas, categorías...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="cart-icon">🛒</div>
+        </div>
+    </header>
+
+    <!-- Filters -->
+    <section class="filters">
+        <div class="filters-content">
+            <button class="filter-btn active" onclick="filterProducts('todos')">Todos</button>
+            <button class="filter-btn" onclick="filterProducts('cuerdas')">Cuerdas</button>
+            <button class="filter-btn" onclick="filterProducts('viento')">Viento</button>
+            <button class="filter-btn" onclick="filterProducts('percusion')">Percusión</button>
+            <button class="filter-btn" onclick="filterProducts('teclados')">Teclados</button>
+            <button class="filter-btn" onclick="filterProducts('audio')">Audio</button>
+            <button class="filter-btn" onclick="filterProducts('accesorios')">Accesorios</button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1>Catálogo de Productos</h1>
+            <select class="sort-select">
+                <option>Ordenar por: Destacados</option>
+                <option>Precio: Menor a Mayor</option>
+                <option>Precio: Mayor a Menor</option>
+                <option>Más Vendidos</option>
+                <option>Mejor Calificados</option>
+            </select>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Guitarras -->
+            <div class="product-card" data-category="cuerdas">
+                <div class="product-image">
+                    🎸
+                    <span class="badge new">Nuevo</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Guitarras Eléctricas</div>
+                    <h3 class="product-name">Fender Stratocaster</h3>
+                    <div class="rating">★★★★★ (128)</div>
+                    <p class="product-description">Guitarra eléctrica profesional con acabado sunburst</p>
+                    <div class="product-footer">
+                        <span class="price">$18,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="cuerdas">
+                <div class="product-image">
+                    🎸
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Guitarras Acústicas</div>
+                    <h3 class="product-name">Yamaha FG800</h3>
+                    <div class="rating">★★★★☆ (96)</div>
+                    <p class="product-description">Guitarra acústica ideal para principiantes</p>
+                    <div class="product-footer">
+                        <span class="price">$6,499</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="cuerdas">
+                <div class="product-image">
+                    🎸
+                    <span class="badge sale">-20%</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Bajos Eléctricos</div>
+                    <h3 class="product-name">Ibanez SR300E</h3>
+                    <div class="rating">★★★★★ (74)</div>
+                    <p class="product-description">Bajo de 4 cuerdas con sonido versátil</p>
+                    <div class="product-footer">
+                        <span class="price">$9,599</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="cuerdas">
+                <div class="product-image">🎻</div>
+                <div class="product-info">
+                    <div class="product-category">Violines</div>
+                    <h3 class="product-name">Stradivarius Student</h3>
+                    <div class="rating">★★★★☆ (52)</div>
+                    <p class="product-description">Violín 4/4 con estuche y arco incluidos</p>
+                    <div class="product-footer">
+                        <span class="price">$4,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teclados -->
+            <div class="product-card" data-category="teclados">
+                <div class="product-image">
+                    🎹
+                    <span class="badge">Popular</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Pianos Digitales</div>
+                    <h3 class="product-name">Yamaha P-125</h3>
+                    <div class="rating">★★★★★ (145)</div>
+                    <p class="product-description">Piano digital de 88 teclas contrapesadas</p>
+                    <div class="product-footer">
+                        <span class="price">$14,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="teclados">
+                <div class="product-image">🎹</div>
+                <div class="product-info">
+                    <div class="product-category">Sintetizadores</div>
+                    <h3 class="product-name">Korg Minilogue XD</h3>
+                    <div class="rating">★★★★★ (89)</div>
+                    <p class="product-description">Sintetizador analógico polifónico</p>
+                    <div class="product-footer">
+                        <span class="price">$16,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="teclados">
+                <div class="product-image">
+                    🎹
+                    <span class="badge new">Nuevo</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Teclados Portátiles</div>
+                    <h3 class="product-name">Casio CT-S300</h3>
+                    <div class="rating">★★★★☆ (67)</div>
+                    <p class="product-description">Teclado de 61 teclas con 400 tonos</p>
+                    <div class="product-footer">
+                        <span class="price">$3,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Percusión -->
+            <div class="product-card" data-category="percusion">
+                <div class="product-image">🥁</div>
+                <div class="product-info">
+                    <div class="product-category">Baterías Acústicas</div>
+                    <h3 class="product-name">Pearl Export EXX</h3>
+                    <div class="rating">★★★★★ (103)</div>
+                    <p class="product-description">Batería de 5 piezas con herrajes incluidos</p>
+                    <div class="product-footer">
+                        <span class="price">$19,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="percusion">
+                <div class="product-image">
+                    🥁
+                    <span class="badge">Popular</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Baterías Electrónicas</div>
+                    <h3 class="product-name">Roland TD-17KV</h3>
+                    <div class="rating">★★★★★ (112)</div>
+                    <p class="product-description">Batería electrónica con malla de doble capa</p>
+                    <div class="product-footer">
+                        <span class="price">$24,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="percusion">
+                <div class="product-image">🥁</div>
+                <div class="product-info">
+                    <div class="product-category">Cajones</div>
+                    <h3 class="product-name">Meinl Headliner</h3>
+                    <div class="rating">★★★★☆ (85)</div>
+                    <p class="product-description">Cajón de madera con ajuste interno</p>
+                    <div class="product-footer">
+                        <span class="price">$2,499</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Viento -->
+            <div class="product-card" data-category="viento">
+                <div class="product-image">🎺</div>
+                <div class="product-info">
+                    <div class="product-category">Trompetas</div>
+                    <h3 class="product-name">Yamaha YTR-2330</h3>
+                    <div class="rating">★★★★☆ (58)</div>
+                    <p class="product-description">Trompeta en Sib ideal para estudiantes</p>
+                    <div class="product-footer">
+                        <span class="price">$7,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="viento">
+                <div class="product-image">
+                    🎷
+                    <span class="badge new">Nuevo</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Saxofones</div>
+                    <h3 class="product-name">Selmer AS400</h3>
+                    <div class="rating">★★★★★ (71)</div>
+                    <p class="product-description">Saxofón alto con acabado lacado dorado</p>
+                    <div class="product-footer">
+                        <span class="price">$12,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="viento">
+                <div class="product-image">🎺</div>
+                <div class="product-info">
+                    <div class="product-category">Flautas Traversas</div>
+                    <h3 class="product-name">Jupiter JFL700</h3>
+                    <div class="rating">★★★★☆ (44)</div>
+                    <p class="product-description">Flauta en Do con cabeza curva opcional</p>
+                    <div class="product-footer">
+                        <span class="price">$5,499</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio -->
+            <div class="product-card" data-category="audio">
+                <div class="product-image">🎤</div>
+                <div class="product-info">
+                    <div class="product-category">Micrófonos</div>
+                    <h3 class="product-name">Shure SM58</h3>
+                    <div class="rating">★★★★★ (203)</div>
+                    <p class="product-description">Micrófono vocal dinámico legendario</p>
+                    <div class="product-footer">
+                        <span class="price">$2,899</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="audio">
+                <div class="product-image">
+                    🔊
+                    <span class="badge">Popular</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Amplificadores</div>
+                    <h3 class="product-name">Marshall MG30FX</h3>
+                    <div class="rating">★★★★☆ (94)</div>
+                    <p class="product-description">Amplificador de guitarra 30W con efectos</p>
+                    <div class="product-footer">
+                        <span class="price">$6,499</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="audio">
+                <div class="product-image">🎧</div>
+                <div class="product-info">
+                    <div class="product-category">Interfaces de Audio</div>
+                    <h3 class="product-name">Focusrite Scarlett 2i2</h3>
+                    <div class="rating">★★★★★ (156)</div>
+                    <p class="product-description">Interface USB con 2 entradas y 2 salidas</p>
+                    <div class="product-footer">
+                        <span class="price">$4,299</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="audio">
+                <div class="product-image">
+                    🎧
+                    <span class="badge new">Nuevo</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Audífonos</div>
+                    <h3 class="product-name">Audio-Technica ATH-M50x</h3>
+                    <div class="rating">★★★★★ (187)</div>
+                    <p class="product-description">Audífonos de estudio profesionales</p>
+                    <div class="product-footer">
+                        <span class="price">$4,999</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accesorios -->
+            <div class="product-card" data-category="accesorios">
+                <div class="product-image">🎼</div>
+                <div class="product-info">
+                    <div class="product-category">Cuerdas</div>
+                    <h3 class="product-name">Ernie Ball Regular Slinky</h3>
+                    <div class="rating">★★★★★ (234)</div>
+                    <p class="product-description">Juego de cuerdas calibre .010-.046</p>
+                    <div class="product-footer">
+                        <span class="price">$199</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="accesorios">
+                <div class="product-image">🎸</div>
+                <div class="product-info">
+                    <div class="product-category">Soportes</div>
+                    <h3 class="product-name">Hercules GS414B</h3>
+                    <div class="rating">★★★★★ (142)</div>
+                    <p class="product-description">Soporte universal para guitarra/bajo</p>
+                    <div class="product-footer">
+                        <span class="price">$899</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="accesorios">
+                <div class="product-image">🥁</div>
+                <div class="product-info">
+                    <div class="product-category">Baquetas</div>
+                    <h3 class="product-name">Vic Firth 5A</h3>
+                    <div class="rating">★★★★★ (198)</div>
+                    <p class="product-description">Par de baquetas de hickory americano</p>
+                    <div class="product-footer">
+                        <span class="price">$299</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="accesorios">
+                <div class="product-image">
+                    🎸
+                    <span class="badge sale">-15%</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Pedales</div>
+                    <h3 class="product-name">Boss DS-1 Distortion</h3>
+                    <div class="rating">★★★★☆ (167)</div>
+                    <p class="product-description">Pedal clásico de distorsión</p>
+                    <div class="product-footer">
+                        <span class="price">$1,699</span>
+                        <button class="add-to-cart">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <h3>🎵 SoundWave</h3>
+            <p>Tu destino para instrumentos musicales de calidad</p>
+            <div class="footer-links">
+                <a href="#">Inicio</a>
+                <a href="#">Catálogo</a>
+                <a href="#">Ofertas</a>
+                <a href="#">Marcas</a>
+                <a href="#">Servicio Técnico</a>
+                <a href="#">Contacto</a>
+                <a href="#">Ayuda</a>
+            </div>
+            <p style="margin-top: 1.5rem; color: #718096;">📍 Toluca, México | 📞 (722) 555-7890 | 📧 hola@soundwave.mx</p>
+            <p style="margin-top: 1rem; color: #a0aec0;">&copy; 2025 SoundWave. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        function filterProducts(category) {
+            const cards = document.querySelectorAll('.product-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cards.forEach(card => {
+                if (category === 'todos' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productName = e.target.closest('.product-card').querySelector('.product-name').textContent;
+                alert(`✓ ${productName} agregado al carrito`);
+            });
+        });
+    </script>
+</body>
+</html>
